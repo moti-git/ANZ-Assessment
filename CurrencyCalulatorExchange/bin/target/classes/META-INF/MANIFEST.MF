@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: CurrencyCalulatorExchange
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: motjha
+Implementation-Vendor-Id: com.amz.exchange.calulator
+Build-Jdk: 1.8.0_171
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/com.amz.exchange.calulator
+Created-By: Maven Integration for Eclipse
+

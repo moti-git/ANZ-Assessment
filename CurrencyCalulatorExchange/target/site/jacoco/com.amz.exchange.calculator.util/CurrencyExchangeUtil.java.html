@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CurrencyExchangeUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CurrencyCalulatorExchange</a> &gt; <a href="index.source.html" class="el_package">com.amz.exchange.calculator.util</a> &gt; <span class="el_source">CurrencyExchangeUtil.java</span></div><h1>CurrencyExchangeUtil.java</h1><pre class="source lang-java linenums">package com.amz.exchange.calculator.util;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.amz.exchange.calculator.model.CurrencyConversionBean;
+import com.amz.exchange.calculator.model.CurrencyExchangeDecimalValue;
+import com.amz.exchange.calculator.model.ExchangeValue;
+
+<span class="nc" id="L11">public class CurrencyExchangeUtil {</span>
+	
+	/**
+	 * @param currencyConversionBean
+	 * @param materix
+	 */
+	public static String getMaterixCurrencyMapValue(CurrencyConversionBean currencyConversionBean, String[][] materix) {
+<span class="fc" id="L18">		String currencyFromValue = currencyConversionBean.getFrom();</span>
+<span class="fc" id="L19">	     String currencyToValue = currencyConversionBean.getTo();</span>
+<span class="fc" id="L20">	     int rowIndex = 0;</span>
+<span class="fc" id="L21">	     int columIndex = 0;</span>
+<span class="fc" id="L22">	     boolean rowFound = false;</span>
+<span class="fc" id="L23">	     boolean columnFound = false;</span>
+	     
+<span class="fc bfc" id="L25" title="All 2 branches covered.">	     for (int row = 1; row &lt; materix.length; row++) {</span>
+<span class="fc" id="L26">				String currencyBaseValue = materix[row][0];</span>
+<span class="fc" id="L27">				String currencyTargetValue = materix[0][row];</span>
+<span class="fc bfc" id="L28" title="All 4 branches covered.">				if(!rowFound &amp;&amp; currencyBaseValue.equals(currencyFromValue)) {</span>
+<span class="fc" id="L29">					rowIndex = row;</span>
+<span class="fc" id="L30">					rowFound = true;</span>
+				}
+				
+<span class="fc bfc" id="L33" title="All 4 branches covered.">				if(!columnFound &amp;&amp; currencyTargetValue.equals(currencyToValue)) {</span>
+<span class="fc" id="L34">					columIndex = row;</span>
+<span class="fc" id="L35">					columnFound = true;</span>
+				}
+<span class="fc bfc" id="L37" title="All 4 branches covered.">				if (rowFound &amp;&amp; columnFound) {</span>
+<span class="fc" id="L38">					break;</span>
+				}				
+				
+	     }	
+	     
+<span class="fc" id="L43">	      return materix[rowIndex][columIndex];</span>
+	}	
+
+	public static String findCrossCurrencyValue(List&lt;ExchangeValue&gt; exchangeValueList, String currencyFromValue,
+			String currencytoValue, boolean repeatFlag) {
+   
+<span class="fc" id="L49">		String crossCurrencyValue = &quot;USD&quot;;</span>
+<span class="fc" id="L50">		String commonCurrencyValue = null;</span>
+		
+		
+<span class="fc" id="L53">		List&lt;ExchangeValue&gt; exchangeFromValueList = new ArrayList&lt;ExchangeValue&gt;();</span>
+<span class="fc" id="L54">		List&lt;ExchangeValue&gt;  exchangetoValueList = new ArrayList&lt;ExchangeValue&gt;();</span>
+		
+		//Get all from currency mapped list
+<span class="fc" id="L57">		exchangeFromValueList = exchangeValueList.stream()</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">				.filter(exchanValue -&gt; currencyFromValue.equals(exchanValue.getFrom())</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">						|| currencyFromValue.equals(exchanValue.getTo())).collect(Collectors.toList());</span>
+		
+		//Get all to currency mapped list
+<span class="fc" id="L62">		exchangetoValueList = exchangeValueList.stream()</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">				.filter(exchanValue -&gt; currencytoValue.equals(exchanValue.getFrom())</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">						|| currencytoValue.equals(exchanValue.getTo())).collect(Collectors.toList());</span>
+		
+		// find the matching currency
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (exchangetoValueList.size() &gt; exchangeFromValueList.size()) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (ExchangeValue fromCurrency : exchangeFromValueList) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				commonCurrencyValue = fromCurrency.getFrom().equals(currencyFromValue) ? fromCurrency.getTo()</span>
+<span class="fc" id="L70">						: fromCurrency.getTo();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (ExchangeValue toCurrency : exchangetoValueList) {</span>
+<span class="pc bpc" id="L72" title="1 of 4 branches missed.">                     if(toCurrency.getFrom().equals(commonCurrencyValue) || toCurrency.getTo().equals(commonCurrencyValue)) {</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">                    	 crossCurrencyValue = toCurrency.getFrom().equals(commonCurrencyValue) ? toCurrency.getFrom()</span>
+<span class="fc" id="L74">							: toCurrency.getTo();</span>
+<span class="fc" id="L75">                    	 break;</span>
+                     }
+<span class="fc" id="L77">				}</span>
+<span class="fc" id="L78">			}</span>
+
+		} else {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (ExchangeValue toCurrency : exchangetoValueList) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				commonCurrencyValue = toCurrency.getTo().equals(currencytoValue) ? toCurrency.getFrom()</span>
+<span class="fc" id="L83">						: toCurrency.getTo();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				for (ExchangeValue fromCurrency : exchangeFromValueList) {</span>
+<span class="fc bfc" id="L85" title="All 4 branches covered.">					 if(fromCurrency.getFrom().equals(commonCurrencyValue) || fromCurrency.getTo().equals(commonCurrencyValue)) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">					crossCurrencyValue = fromCurrency.getFrom().equals(commonCurrencyValue) ? fromCurrency.getFrom()</span>
+<span class="fc" id="L87">							: fromCurrency.getTo();</span>
+<span class="fc" id="L88">					  break;</span>
+					 }
+
+<span class="fc" id="L91">				}</span>
+<span class="fc" id="L92">			}</span>
+		}
+
+<span class="fc" id="L95">		return crossCurrencyValue;</span>
+	}
+
+	public static int getCurrencyDecimalPlace(List&lt;CurrencyExchangeDecimalValue&gt; currencyDecimalValueList, String toCurrency) {
+<span class="fc" id="L99">		int decimalValue = 0;</span>
+<span class="fc" id="L100">		CurrencyExchangeDecimalValue curreDecimalValue = currencyDecimalValueList.stream()</span>
+<span class="fc" id="L101">				.filter(curreDecimalVal -&gt; curreDecimalVal.getCountryCurrency().equals(toCurrency))</span>
+<span class="fc" id="L102">				.findAny().orElse(null);</span>
+		
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if(null != curreDecimalValue) {</span>
+<span class="fc" id="L105">			return curreDecimalValue.getDecimalPlace();</span>
+		}
+		
+<span class="fc" id="L108">		return decimalValue;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.amz.exchange.calulator.controller.CurrencyExchangeCaculatorControllerTests
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.374 s - in com.amz.exchange.calulator.controller.CurrencyExchangeCaculatorControllerTests

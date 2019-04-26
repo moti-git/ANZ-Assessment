@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CurrencyExchangeCrossCalculationHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CurrencyCalulatorExchange</a> &gt; <a href="index.source.html" class="el_package">com.amz.exchange.calculator.handler.impl</a> &gt; <span class="el_source">CurrencyExchangeCrossCalculationHandler.java</span></div><h1>CurrencyExchangeCrossCalculationHandler.java</h1><pre class="source lang-java linenums">package com.amz.exchange.calculator.handler.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.amz.exchange.calculator.controller.CurrencyExchangeCalulatorController;
+import com.amz.exchange.calculator.handler.CurrencyExchangeHandler;
+import com.amz.exchange.calculator.model.CurrencyConversionBean;
+import com.amz.exchange.calculator.model.ExchangeValue;
+import com.amz.exchange.calculator.strategy.CurrencyCalculationStrategy;
+import com.amz.exchange.calculator.strategy.factory.CurrencyCalculationStrategyFactory;
+import com.amz.exchange.calculator.strategy.impl.CurrencyCrossJoinCalculationStrategyImpl;
+import com.amz.exchange.calculator.util.CurrencyExchangeUtil;
+
+
+<span class="fc" id="L19">public class CurrencyExchangeCrossCalculationHandler implements CurrencyExchangeHandler {</span>
+	
+<span class="fc" id="L21">	private static final Log logger = LogFactory.getLog(CurrencyExchangeCrossCalculationHandler.class);</span>
+   
+	private CurrencyExchangeHandler chain;
+ 
+
+	@Override
+	public void setNextCurrencyHandler(CurrencyExchangeHandler nextChain) {
+<span class="nc" id="L28">		this.chain = nextChain;</span>
+		
+<span class="nc" id="L30">	}</span>
+
+	@Override
+	public CurrencyConversionBean convertCurrency(CurrencyConversionBean currencyConversionBean, String[][] materix,
+			Map&lt;String, ExchangeValue&gt; currencyExchangeMap, List&lt;ExchangeValue&gt; exchangeValueList) throws Exception {
+		
+<span class="fc" id="L36">		logger.info(&quot;CurrencyExchangeCrossCalculationHandler::convertCurrency(): start&quot;);</span>
+<span class="fc" id="L37">		  String materixMapValue = CurrencyExchangeUtil.getMaterixCurrencyMapValue(currencyConversionBean, materix);</span>
+<span class="pc bpc" id="L38" title="3 of 6 branches missed.">		  if (materixMapValue != &quot;1:1&quot; &amp;&amp; materixMapValue != &quot;D&quot; &amp;&amp;</span>
+				  materixMapValue != &quot;Inv&quot;) {
+<span class="fc" id="L40">			  CurrencyCalculationStrategy calulationStrategy = CurrencyCalculationStrategyFactory.getStrategy(CurrencyCrossJoinCalculationStrategyImpl.class);</span>
+<span class="fc" id="L41">			  return calulationStrategy.convertCurrency(currencyConversionBean, materixMapValue, currencyExchangeMap,exchangeValueList);</span>
+		  }
+<span class="nc" id="L43">	        return callNextChain(currencyConversionBean, materix, currencyExchangeMap, exchangeValueList);</span>
+	}
+
+	
+	
+
+	private CurrencyConversionBean callNextChain(CurrencyConversionBean currencyConversionBean, String[][] materix,
+			Map&lt;String, ExchangeValue&gt; currencyExchangeMap, List&lt;ExchangeValue&gt; exchangeValueList) throws Exception {
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">		if (null == this.chain) {</span>
+<span class="nc" id="L53">			return currencyConversionBean;</span>
+		}
+
+<span class="nc" id="L56">		return this.chain.convertCurrency(currencyConversionBean, materix, currencyExchangeMap, exchangeValueList);</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

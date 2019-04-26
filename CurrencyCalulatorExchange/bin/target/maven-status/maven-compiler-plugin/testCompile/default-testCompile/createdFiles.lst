@@ -1,0 +1,11 @@
+com\amz\exchange\calculator\CurrencyExchangeCalulatorApplicationTests.class
+com\amz\exchange\calculator\model\CurrencyConversionBeanTest.class
+com\amz\exchange\calculator\model\ExchangeValueTest.class
+com\amz\exchange\calculator\repository\CurrencyDecimalValueRepositoryTest.class
+com\amz\exchange\calculator\service\impl\CurrencyExchangeServiceImplTest.class
+com\amz\exchange\calculator\strategy\factory\CurrencyCalculationStrategyFactoryTest.class
+com\amz\exchange\calculator\model\CurrencyExchangeDecimalValueTest.class
+com\amz\exchange\calulator\repository\ExchangeValueRepositoryTests.class
+com\amz\exchange\calculator\repository\ExchangeValueRepositoryTest.class
+com\amz\exchange\calculator\util\CurrencyExchangeUtilTest.class
+com\amz\exchange\calulator\controller\CurrencyExchangeCaculatorControllerTests.class

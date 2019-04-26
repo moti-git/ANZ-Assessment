@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CurrencyExchangeServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CurrencyCalulatorExchange</a> &gt; <a href="index.source.html" class="el_package">com.amz.exchange.calculator.service.impl</a> &gt; <span class="el_source">CurrencyExchangeServiceImpl.java</span></div><h1>CurrencyExchangeServiceImpl.java</h1><pre class="source lang-java linenums">/**
+ * 
+ */
+package com.amz.exchange.calculator.service.impl;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.amz.exchange.calculator.handler.CurrencyExchangeHandler;
+import com.amz.exchange.calculator.handler.CurrencyExchangeHandlerResponsibilty;
+import com.amz.exchange.calculator.model.CurrencyConversionBean;
+import com.amz.exchange.calculator.model.CurrencyExchangeDecimalValue;
+import com.amz.exchange.calculator.model.ExchangeValue;
+import com.amz.exchange.calculator.repository.CurrencyDecimalValueRepository;
+import com.amz.exchange.calculator.repository.ExchangeValueRepository;
+import com.amz.exchange.calculator.service.CurrencyExchangeService;
+import com.amz.exchange.calculator.util.CurrencyExchangeUtil;
+
+/**
+ * @author motjha
+ *
+ */
+@Service
+<span class="fc" id="L35">public class CurrencyExchangeServiceImpl implements CurrencyExchangeService {</span>
+
+<span class="fc" id="L37">	private static final Log logger = LogFactory.getLog(CurrencyExchangeServiceImpl.class);</span>
+
+	@Autowired
+	private ExchangeValueRepository exchangeValueRepository;
+
+	@Autowired
+	private CurrencyDecimalValueRepository currencyDecimalValueRepository;
+
+<span class="fc" id="L45">	public static Map&lt;String, ExchangeValue&gt; currencyExchangeDirectMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L47">	public static Map&lt;String, ExchangeValue&gt; currencyExchangeDirectAndInverseMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L49">	public static List&lt;ExchangeValue&gt; exchangeValueList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L51">	public static List&lt;CurrencyExchangeDecimalValue&gt; currencyDecimalValueList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L53">	public static String[][] materix = null;</span>
+
+	@PostConstruct
+	public void init() {
+		
+<span class="fc" id="L58">		logger.info(&quot;Inside init to load all currency mapping data...&quot;);</span>
+		
+		// Get available currency details from DB
+<span class="fc" id="L61">		exchangeValueList = exchangeValueRepository.findAll();</span>
+
+<span class="fc" id="L63">		currencyExchangeDirectMap = exchangeValueList.stream().collect(HashMap::new,</span>
+<span class="fc" id="L64">				(m1, v1) -&gt; m1.put(v1.getFrom() + v1.getTo(), v1), HashMap::putAll);</span>
+
+<span class="fc" id="L66">		exchangeValueList.forEach((v2) -&gt; {</span>
+
+<span class="fc" id="L68">			currencyExchangeDirectAndInverseMap.put(v2.getTo() + v2.getFrom(),</span>
+<span class="fc" id="L69">					new ExchangeValue(v2.getId(), v2.getFrom(), v2.getTo(),</span>
+<span class="fc" id="L70">							new BigDecimal(1).divide(v2.getConversionMultiple(), 4, RoundingMode.DOWN)));</span>
+<span class="fc" id="L71">		});</span>
+
+<span class="fc" id="L73">		currencyExchangeDirectAndInverseMap.putAll(currencyExchangeDirectMap);</span>
+
+<span class="fc" id="L75">		currencyDecimalValueList = currencyDecimalValueRepository.findAll();</span>
+
+		// Initialize matrix to keep map details.
+<span class="fc" id="L78">		materix = new String[currencyDecimalValueList.size() + 1][currencyDecimalValueList.size() + 1];</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int i = 0; i &lt; currencyDecimalValueList.size(); i++) {</span>
+<span class="fc" id="L81">			materix[0][1 + i] = currencyDecimalValueList.get(i).getCountryCurrency();</span>
+<span class="fc" id="L82">			materix[1 + i][0] = currencyDecimalValueList.get(i).getCountryCurrency();</span>
+		}
+
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int row = 1; row &lt; materix.length; row++) {</span>
+<span class="fc" id="L86">			String currencyFromValue = materix[row][0];</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int column = 1; column &lt; materix[row].length; column++) {</span>
+<span class="fc" id="L89">				String currencyToValue = materix[0][column];</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (row == column) {</span>
+<span class="fc" id="L91">					materix[row][column] = &quot;1:1&quot;;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				} else if (null != currencyExchangeDirectMap.get(currencyFromValue + currencyToValue)) {</span>
+<span class="fc" id="L93">					materix[row][column] = &quot;D&quot;;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				} else if (null != currencyExchangeDirectMap.get(currencyToValue + currencyFromValue)) {</span>
+<span class="fc" id="L95">					materix[row][column] = &quot;Inv&quot;;</span>
+				} else {
+<span class="fc" id="L97">					materix[row][column] = CurrencyExchangeUtil.findCrossCurrencyValue(exchangeValueList,</span>
+							currencyFromValue, currencyToValue, false);
+				}
+
+			}
+
+		}
+		
+<span class="fc" id="L105">		logger.info(&quot;Initialization completed...&quot;);</span>
+<span class="fc" id="L106">	}</span>
+
+	@Override
+	public BigDecimal exchangeCurrency(String from, String to, BigDecimal amount) throws Exception {
+
+<span class="fc" id="L111">		logger.info(&quot;CurrencyExchangeServiceImpl::exchangeCurrency(): start &quot;);</span>
+		
+<span class="fc" id="L113">		CurrencyConversionBean currencyConversionBean = new CurrencyConversionBean(null, from, to, null, amount, null);</span>
+
+		// To get chain handlers to exchange currency
+		CurrencyExchangeHandler cuExchangeHandler = CurrencyExchangeHandlerResponsibilty
+<span class="fc" id="L117">				.getChainOfCurrencyExchangeHandler();</span>
+
+		// Handler will decide which calculation will apply based currency mapping.
+<span class="fc" id="L120">		cuExchangeHandler.convertCurrency(currencyConversionBean, materix, currencyExchangeDirectAndInverseMap,</span>
+				exchangeValueList);
+<span class="fc" id="L122">		logger.info(&quot;CurrencyExchangeServiceImpl::exchangeCurrency(): end with caculated value &quot;+currencyConversionBean.getTotalCalculatedAmount());</span>
+		
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if (null == currencyConversionBean.getTotalCalculatedAmount()) {</span>
+<span class="fc" id="L125">			return null;</span>
+		}
+<span class="fc" id="L127">		return currencyConversionBean.getTotalCalculatedAmount().setScale(</span>
+<span class="fc" id="L128">				CurrencyExchangeUtil.getCurrencyDecimalPlace(currencyDecimalValueList, to), RoundingMode.DOWN);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

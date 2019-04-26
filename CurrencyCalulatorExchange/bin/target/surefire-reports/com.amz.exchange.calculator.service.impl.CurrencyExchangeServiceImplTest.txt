@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.amz.exchange.calculator.service.impl.CurrencyExchangeServiceImplTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.018 s <<< FAILURE! - in com.amz.exchange.calculator.service.impl.CurrencyExchangeServiceImplTest
+testCurrencyExchangeFailure(com.amz.exchange.calculator.service.impl.CurrencyExchangeServiceImplTest)  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.Exception: Unexpected exception, expected<java.lang.NullPointerException> but was<java.lang.AssertionError>
+	at com.amz.exchange.calculator.service.impl.CurrencyExchangeServiceImplTest.testCurrencyExchangeFailure(CurrencyExchangeServiceImplTest.java:50)
+

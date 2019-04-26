@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CurrencyCrossJoinCalculationStrategyImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CurrencyCalulatorExchange</a> &gt; <a href="index.source.html" class="el_package">com.amz.exchange.calculator.strategy.impl</a> &gt; <span class="el_source">CurrencyCrossJoinCalculationStrategyImpl.java</span></div><h1>CurrencyCrossJoinCalculationStrategyImpl.java</h1><pre class="source lang-java linenums">package com.amz.exchange.calculator.strategy.impl;
+
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.amz.exchange.calculator.model.CurrencyConversionBean;
+import com.amz.exchange.calculator.model.ExchangeValue;
+import com.amz.exchange.calculator.strategy.CurrencyCalculationStrategy;
+import com.amz.exchange.calculator.util.CurrencyExchangeUtil;
+
+<span class="fc" id="L13">public class CurrencyCrossJoinCalculationStrategyImpl implements CurrencyCalculationStrategy {</span>
+
+	@Override
+	public CurrencyConversionBean convertCurrency(CurrencyConversionBean currencyConversionBean, String materixMapValue,
+			Map&lt;String, ExchangeValue&gt; currencyExchangeMap, List&lt;ExchangeValue&gt; exchangeValueList) throws Exception {
+
+<span class="fc" id="L19">		String crossCurrency = null;</span>
+<span class="fc" id="L20">		ExchangeValue  fromCurrencyValue = currencyExchangeMap.get(currencyConversionBean.getFrom() + materixMapValue);</span>
+				
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">		if(null == fromCurrencyValue) {</span>
+<span class="fc" id="L23">			return currencyConversionBean;</span>
+		}
+<span class="nc" id="L25">		currencyConversionBean.setConversionMultiple(fromCurrencyValue.getConversionMultiple());</span>
+<span class="nc" id="L26">		ExchangeValue crossCurrencyValue = currencyExchangeMap.get(materixMapValue + currencyConversionBean.getTo());</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">		if (null == crossCurrencyValue) {</span>
+<span class="nc" id="L28">			crossCurrency = CurrencyExchangeUtil.findCrossCurrencyValue(exchangeValueList, materixMapValue,</span>
+<span class="nc" id="L29">					currencyConversionBean.getTo(), false);</span>
+
+<span class="nc bnc" id="L31" title="All 4 branches missed.">			if (crossCurrency != null &amp;&amp; !crossCurrency.equals(materixMapValue)) {</span>
+<span class="nc" id="L32">				currencyConversionBean.setConversionMultiple(currencyConversionBean.getConversionMultiple()</span>
+<span class="nc" id="L33">						.multiply(currencyExchangeMap.get(materixMapValue + crossCurrency).getConversionMultiple())</span>
+<span class="nc" id="L34">						.multiply(currencyExchangeMap.get(crossCurrency + currencyConversionBean.getTo())</span>
+<span class="nc" id="L35">								.getConversionMultiple()));</span>
+			}
+		} else {
+<span class="nc" id="L38">			currencyConversionBean.setConversionMultiple(</span>
+<span class="nc" id="L39">					currencyConversionBean.getConversionMultiple().multiply(crossCurrencyValue.getConversionMultiple()));</span>
+		}
+
+		// Cross currency exchange
+<span class="nc" id="L43">		currencyConversionBean.setTotalCalculatedAmount(currencyConversionBean.getConversionMultiple()</span>
+<span class="nc" id="L44">				.multiply(currencyConversionBean.getQuantity()).setScale(4, RoundingMode.DOWN));</span>
+
+<span class="nc" id="L46">		return currencyConversionBean;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
